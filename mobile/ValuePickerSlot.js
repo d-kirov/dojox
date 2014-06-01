@@ -7,12 +7,13 @@ define([
 	"dojo/dom-class",
 	"dojo/dom-construct",
 	"dojo/dom-attr",
+	"dojo/dom-style",
 	"dojo/touch",
 	"dijit/_WidgetBase",
 	"./iconUtils",
 	"dojo/has",
 	"dojo/has!dojo-bidi?dojox/mobile/bidi/ValuePickerSlot"
-], function(array, declare, event, lang, win, domClass, domConstruct, domAttr, touch, WidgetBase, iconUtils, has, BidiValuePickerSlot){
+], function(array, declare, event, lang, win, domClass, domConstruct, domAttr, domStyle, touch, WidgetBase, iconUtils, has, BidiValuePickerSlot){
 
 	// module:
 	//		dojox/mobile/ValuePickerSlot
@@ -67,6 +68,10 @@ define([
 		//		Tabindex setting for this widget so users can hit the tab key to
 		//		focus on it.
 		tabIndex: "0",
+
+		// orientation: String
+		//		Horizontal(H) or vertical(V) orientation. Default is V.
+		orientation: "V",
 
 		// key: Object
 		//		The key of the currently selected value in the items array. This is a read-only property.
@@ -151,6 +156,66 @@ define([
 				this.value = this.items[0][1];
 			}
 			this._initialValue = this.value;
+			if (this.orientation == "H") {
+				this.rotate90();
+			}
+		},
+		
+		rotate90: function() {
+			// summary:
+			//		Applies a horizontal transformation.
+			// tags:
+			//		private
+			
+			var height = this.inputAreaNode.offsetHeight;
+			var width =  this.inputAreaNode.offsetWidth;
+			
+			// spacings switch when element is rotated at 90deg
+			var width_space = width - this.inputNode.offsetWidth;
+			var height_space = height - this.inputNode.offsetHeight;
+			
+			// using wrapper to keep domNode clean from transformations 
+			// and let it has it's original dimensions
+			var wrapper = domConstruct.create("div", {
+				style: "-webkit-transform-origin: 0% 100%; -webkit-transform: translateY(-100%) rotate(90deg);" +
+						"transform-origin: 0% 100%; transform: translateY(-100%) rotate(90deg);"  +
+						"display:inherit"
+			}, this.domNode);
+			domConstruct.place(this.plusBtnNode, wrapper);
+			domConstruct.place(this.inputAreaNode, wrapper);
+			domConstruct.place(this.minusBtnNode, wrapper);
+			
+			domStyle.set(this.plusBtnNode, "width", height + "px");
+			domStyle.set(this.plusBtnNode, "height", height + "px");
+			domStyle.set(this.minusBtnNode, "width", height + "px");
+			domStyle.set(this.minusBtnNode, "height", height + "px");
+			domStyle.set(this.domNode, "height", height + "px");
+			domStyle.set(this.domNode, "display", "inline-block");
+			
+			if(width < 3*height) {
+				// make sure text input field has enough width
+				width = height + width_space
+			} else {
+				// shrink input to match picker's style/width setting
+				width -= 2*height
+			}
+			domStyle.set(this.inputAreaNode, "height", width + "px");
+			domStyle.set(this.inputAreaNode, "width", height + "px");
+			
+			// Rotate inputNode to have a horizontal text editing. 
+			// firefox workaround: transform is not recognized if set with domStyle.set 
+			domAttr.set(this.inputNode, "style", "transform:rotate(-90deg) translateX(-100%);transform-origin:0% 0% 0px");
+			domStyle.set(this.inputNode,"-webkit-transform-origin", "0% 0%");
+			domStyle.set(this.inputNode,"-webkit-transform", "rotate(-90deg) translateX(-100%)");
+			domStyle.set(this.inputNode, "width", width - height_space + "px");
+			domStyle.set(this.inputNode, "height", height - width_space + "px");
+			
+			//rotate icons
+			domStyle.set(this.plusIconNode,"-webkit-transform", "rotate(90deg)");
+			domStyle.set(this.plusIconNode,"transform", "rotate(90deg)");
+			
+			domStyle.set(this.minusIconNode,"-webkit-transform", "rotate(90deg)");
+			domStyle.set(this.minusIconNode,"transform", "rotate(90deg)");
 		},
 
 		startup: function(){
