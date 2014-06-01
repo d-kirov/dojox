@@ -1,5 +1,4 @@
 @import url("../common/domButtons/DomButtonGrayPlus.css");
-
 @import url("../common/domButtons/DomButtonGrayMinus.css");
 /* dojox.mobile.ValuePicker */
 .mblValuePicker {
@@ -35,6 +34,10 @@
 .mblValuePickerSlotInputArea {
   position: relative;
   height: 48px;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  padding: 3px;
   border-top: 1px solid #7b797b;
   border-bottom: 1px solid #c6c3c6;
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.1, #fafafa), color-stop(0.2, #fafafa), color-stop(0.5, #ffffff), color-stop(0.9, #ffffff));
@@ -42,9 +45,11 @@
 }
 .mblValuePickerSlotInput {
   display: block;
-  width: 90%;
-  height: 90%;
-  margin: 5% auto;
+  box-sizing: inherit;
+  -webkit-box-sizing: inherit;
+  -moz-box-sizing: inherit;
+  width: 100%;
+  height: 100%;
   padding: 0;
   text-align: center;
   border-style: none;
