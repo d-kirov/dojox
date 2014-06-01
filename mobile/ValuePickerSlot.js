@@ -169,6 +169,7 @@ define([
 			
 			var height = this.inputAreaNode.offsetHeight;
 			var width =  this.inputAreaNode.offsetWidth;
+			var height_diff = height - this.plusBtnNode.offsetHeight;
 			
 			// spacings switch when element is rotated at 90deg
 			var width_space = width - this.inputNode.offsetWidth;
@@ -187,8 +188,12 @@ define([
 			
 			domStyle.set(this.plusBtnNode, "width", height + "px");
 			domStyle.set(this.plusBtnNode, "height", height + "px");
+			domAttr.set(this.plusIconNode, "style", "position:relative;top:" + height_diff + "px"); 
+			
 			domStyle.set(this.minusBtnNode, "width", height + "px");
 			domStyle.set(this.minusBtnNode, "height", height + "px");
+			domAttr.set(this.minusIconNode, "style", "position:relative;top:" + height_diff + "px");
+			
 			domStyle.set(this.domNode, "height", height + "px");
 			domStyle.set(this.domNode, "display", "inline-block");
 			
@@ -210,12 +215,21 @@ define([
 			domStyle.set(this.inputNode, "width", width - height_space + "px");
 			domStyle.set(this.inputNode, "height", height - width_space + "px");
 			
-			//rotate icons
-			domStyle.set(this.plusIconNode,"-webkit-transform", "rotate(90deg)");
-			domStyle.set(this.plusIconNode,"transform", "rotate(90deg)");
+			function rotateElement(el) {
+				domStyle.set(el,"-webkit-transform", "rotate(90deg)");
+				domStyle.set(el,"transform", "rotate(90deg)");
+			}
 			
-			domStyle.set(this.minusIconNode,"-webkit-transform", "rotate(90deg)");
-			domStyle.set(this.minusIconNode,"transform", "rotate(90deg)");
+			var corner = domStyle.get(this.plusBtnNode, "border-top-left-radius");
+			if(corner && corner.charAt(0) != '0') {
+				// edge corners are rounded. Rotate icons to preserve the shape
+				rotateElement(this.plusIconNode);
+				rotateElement(this.minusIconNode);
+			} else {
+				// rotate +- buttons. Button's gradient remains unchanged 
+				rotateElement(this.plusBtnNode);
+				rotateElement(this.minusBtnNode);
+			}
 		},
 
 		startup: function(){
